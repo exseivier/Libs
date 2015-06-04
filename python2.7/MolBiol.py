@@ -85,6 +85,26 @@ class Dna (object):
 		return c
 		
 		#END skewgc() FUNCTION
+	
+	def dH(self, kmer, lmer):
+		"""
+			Returns the Hamming distance between a kmer and lmer
+			(String, String) -> Integer
+		"""
+		self.kmer = kmer
+		self.lmer = lmer
+		c = 0
+		if len(self.kmer) != len(self.lmer):
+			print "K-mer and L-mer have a different size"
+			return 0
+		else:
+			for i in xrange(len(self.kmer)):
+				if self.kmer[i] != self.lmer[i]:
+					c += 1
+				else:
+					pass
+			
+		return c
 
 def main():
 	pass
