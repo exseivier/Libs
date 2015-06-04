@@ -64,9 +64,27 @@ class Dna (object):
 				return self.palseq(seq[1:-1])
 			else:
 				return False
+		
+		#END palseq() FUNCTION
 	
-	
-
+	def skewgc(self, seq):
+		"""
+			Returns the skew value of guanines over cytosine
+			(String) -> Integer
+		"""
+		self.seq = seq
+		c = 0
+		for nt in self.seq:
+			if nt.upper() == "G":
+				c += 1
+			elif nt.upper() == "C":
+				c -= 1
+			else:
+				pass
+		
+		return c
+		
+		#END skewgc() FUNCTION
 
 def main():
 	pass
