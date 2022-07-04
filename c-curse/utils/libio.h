@@ -4,6 +4,8 @@
 #define BUFFER 256
 #define END_OF_INT_ARRAY -127
 #define END_OF_CHR_ARRAY '\0'
+#define TRUE 1
+#define FALSE 0
 
 /* 
  * This data structure holds a sequence from fasta format.
@@ -27,7 +29,7 @@ typedef struct sequence SEQ;
  * mol is a character array with the name of the
  * molecule, it could be DNA, RNA or AA.
  */
-SEQ load_seqs(char* data, char* mol, char delimiter);
+SEQ* load_seqs(char* data, char* mol, char delimiter);
 
 /* load_file function
  * This function reads the file line by

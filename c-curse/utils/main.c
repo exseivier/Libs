@@ -35,10 +35,16 @@ int main(int argc, char* argv[]) {
 		i++;
 	}
 
+	printf("------------------- Testing load_seqs -------------------\n");
+
+	SEQ* seq = load_seqs(data, "DNA", '\n');
+
 	free(idxs);
 	free(data);
 	free(sub);
-	free(results);
+	//To free results.
+	//I hope it works.
+	results = NULL;
 	/* Works pretty good
 	SEQ one_seq = {.type = "DNA",\
 			.header = "Sequence_1",\

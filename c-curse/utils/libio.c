@@ -147,24 +147,47 @@ int len_int_str(int* string) {
 
 /*###### Deploying load_seqs ######*/
 
-SEQ load_seqs(char* data, char* mol, char delimiter) {
+SEQ* load_seqs(char* data, char* mol, char delimiter) {
 	
-	SEQ sequences; // Declaring SEQ structure.
-	SEQ head; // Declaring SEQ structure.
+	SEQ* tmp; // Declaring temporary SEQ structure.
+	SEQ* head; // Declaring head SEQ structure.
 	char** lines; // To recieve split data.
-	int i; // To iterate along lines
-
-	head = sequences;
-
+	int i; // To iterate along lines.
+	char* tmp_line;
+	
+	tmp = (SEQ*) malloc (sizeof(SEQ));
+	head = NULL;
+	tmp_line = NULL;
 	lines = strsplit(data, delimiter);
 	i = 0;
+
 	while (lines[i] != NULL) {
 
-		
+		tmp_line = lines[i];
+		if (tmp_line[0] == '>') {
+			printf("Here is a sequence header!\n");
+			if (tmp -> header == '\0') {
+				tmp -> header = tmp_line;
+				tmp -> type = mol;
+				tmp -> sequence = NULL;
+				tmp -> seq_len = 0;
+				tmp -> link = head;
+			}
+			else {
+				head = tmp;
+				tmp = (SEQ*) malloc (sizeof(SEQ));
+				continue;
+			}
+		}
+		else {
+			printf("Here is a sequence!\n");
+			tmp -> sequence = tmp_line;
+		}
+		i++;
 
 	}
 	
-	return sequences;
+	return head;
 
 }
 
