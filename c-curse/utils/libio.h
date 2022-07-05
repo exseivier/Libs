@@ -6,6 +6,7 @@
 #define END_OF_CHR_ARRAY '\0'
 #define TRUE 1
 #define FALSE 0
+#define bool int
 
 /* 
  * This data structure holds a sequence from fasta format.
@@ -89,5 +90,13 @@ int len_int_str(int* string);
  * Require two pointers to char arrays.
  */
 char* char_cat(char* s1, char* s2);
+
+/* cmp_str function
+ * Compares two character strings.
+ * Requires two pointers to char arrays.
+ * Returns a bool value, 1 for TRUE and 0
+ * for FALSE.
+ */
+bool cmp_str(char* s1, char* s2);
 
 #endif

@@ -5,8 +5,10 @@
 #include "libio.h"
 
 int main(int argc, char* argv[]) {
+	char* seqs_file = argv[1];
+	char* head_file = argv[2];
 	printf("---------------- Testing load_file function ---------------\n");
-	char* data = load_file(argv[1]);
+	char* data = load_file(seqs_file);
 	printf("%s\n", data);
 	printf("---------------- Testing subseq function ----------------\n");
 	char* sub = subseq(data, 3, 8);
@@ -58,6 +60,39 @@ int main(int argc, char* argv[]) {
 	char* s2 = "world!";
 	string = char_cat(s1, s2);
 	printf("Concatenate %s and %s, resulted in: %s\n", s1, s2, string);
+	
+	printf("\n------------------- Testing cmp_str ---------------------\n");
+
+	if (cmp_str("Hello", "Hello")) {
+		printf("Matched strings\n");
+	}
+	else {
+		printf("Unmatched strings\n");
+	}
+
+	printf("---------- Testing loading and comparing strings -----------\n");
+	
+	char* head_data = load_file(head_file);
+	char** headers = strsplit(head_data, '\n');
+	free(head_data);
+	i = 0;
+	int j;
+	while (headers[i] != NULL) {
+		j = 0;
+		while (seqs[j] != NULL) {
+
+			if (cmp_str(headers[i], seqs[j] -> header)) {
+
+				printf("Header %s found in seqs structure\n", headers[i]);
+
+			}
+			j++;
+
+		}
+		i++;
+
+	}
+	
 	free(idxs);
 	free(data);
 	free(sub);

@@ -38,6 +38,7 @@ char* load_file(char* const filename) {
 			}
 		}
 	}
+	data[idx] = END_OF_CHR_ARRAY;
 	return data;
 }
 
@@ -89,11 +90,11 @@ char** strsplit(char* string, char delimiter) {
 
 int* which_idx(char* string, char delimiter) {
 
-	int lstr;
-	int* idxs;
-	int i; // Iterates along string
-	int j; // Iterates along idxs
-	int buf_inc;
+	int lstr; // Stores the length of string.
+	int* idxs; // Indexes array.
+	int i; // Iterates along string.
+	int j; // Iterates along idxs.
+	int buf_inc; // BUFFER increments.
 
 	lstr = len_str(string);
 	buf_inc = BUFFER;
@@ -145,12 +146,12 @@ int len_int_str(int* string) {
 	return idx;
 }
 
-/*###### Deploying load_seqs ######*/
+/*###### Deployed load_seqs ######*/
 
 SEQ** load_seqs(char* data, char* mol, char delimiter) {
 	
 	SEQ* tmp; // Declaring temporary SEQ structure.
-	SEQ** container; // Declaring head SEQ structure.
+	SEQ** container; // Declaring container double pointer SEQ.
 	char** lines; // To recieve split data.
 	char* tmp_line; // temporary storage for each line in lines.
 	int i; // To iterate along lines.
@@ -178,7 +179,9 @@ SEQ** load_seqs(char* data, char* mol, char delimiter) {
 		}
 		else {
 			printf("Here is a sequence!\n");
-			container[container_counter-1] -> sequence = char_cat(container[container_counter-1] -> sequence, tmp_line);
+			container[container_counter-1] -> sequence = \
+				char_cat(container[container_counter-1] -> sequence, \
+				tmp_line);
 		}
 		i++;
 
@@ -232,7 +235,7 @@ char* char_cat(char* s1, char* s2) {
 	int ls2; // Length of s2.
 	char* join; // Stores the whole string.
 	int i; // For loop iterator #1.
-	int j; // Indexer for join.
+	int j; // Temporary index storage for join.
 
 	j = 0;
 	ls1 = len_str(s1);
@@ -252,7 +255,39 @@ char* char_cat(char* s1, char* s2) {
 		j++;
 
 	}
-	join[j] = '\0';
+	join[j] = END_OF_CHR_ARRAY;
 	return join;
 }
 
+
+/*###### Deployed cmp_str ######*/
+
+bool cmp_str(char* s1, char* s2) {
+
+	int ls1; // Length of string 1.
+	int ls2; // Length of string 2.
+	int i; // Iterator.
+
+	ls1 = len_str(s1);
+	ls2 = len_str(s2);
+
+	if (ls1 != ls2) {
+
+		return FALSE;
+
+	}
+	else {
+
+		for (i = 0; i < ls1; i++) {
+
+			if (s1[i] != s2[i]) {
+
+				return FALSE;
+
+			}
+
+		}
+
+	}
+	return TRUE;
+}
