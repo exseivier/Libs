@@ -19,7 +19,6 @@ struct sequence {
 	char* header;
 	char* sequence;
 	int seq_len;
-	struct sequence* link;
 };
 typedef struct sequence SEQ;
 
@@ -29,7 +28,7 @@ typedef struct sequence SEQ;
  * mol is a character array with the name of the
  * molecule, it could be DNA, RNA or AA.
  */
-SEQ* load_seqs(char* data, char* mol, char delimiter);
+SEQ** load_seqs(char* data, char* mol, char delimiter);
 
 /* load_file function
  * This function reads the file line by
@@ -84,5 +83,11 @@ int* which_idx(char* string, char delimiter);
  */
 int len_str(char* string);
 int len_int_str(int* string);
+
+/* char_cat function
+ * Concatenates two char strings.
+ * Require two pointers to char arrays.
+ */
+char* char_cat(char* s1, char* s2);
 
 #endif

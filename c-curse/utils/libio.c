@@ -147,16 +147,17 @@ int len_int_str(int* string) {
 
 /*###### Deploying load_seqs ######*/
 
-SEQ* load_seqs(char* data, char* mol, char delimiter) {
+SEQ** load_seqs(char* data, char* mol, char delimiter) {
 	
 	SEQ* tmp; // Declaring temporary SEQ structure.
-	SEQ* head; // Declaring head SEQ structure.
+	SEQ** container; // Declaring head SEQ structure.
 	char** lines; // To recieve split data.
+	char* tmp_line; // temporary storage for each line in lines.
 	int i; // To iterate along lines.
-	char* tmp_line;
+	int container_counter; // Counts the elements in container.
 	
-	tmp = (SEQ*) malloc (sizeof(SEQ));
-	head = NULL;
+	container = (SEQ**) malloc (sizeof(SEQ*));
+	container_counter = 0;
 	tmp_line = NULL;
 	lines = strsplit(data, delimiter);
 	i = 0;
@@ -166,32 +167,37 @@ SEQ* load_seqs(char* data, char* mol, char delimiter) {
 		tmp_line = lines[i];
 		if (tmp_line[0] == '>') {
 			printf("Here is a sequence header!\n");
-			if (tmp -> header == '\0') {
-				tmp -> header = tmp_line;
-				tmp -> type = mol;
-				tmp -> sequence = NULL;
-				tmp -> seq_len = 0;
-				tmp -> link = head;
-			}
-			else {
-				head = tmp;
-				tmp = (SEQ*) malloc (sizeof(SEQ));
-				continue;
-			}
+			container_counter++;
+			container = realloc(container, sizeof(SEQ*) * container_counter);
+			tmp = (SEQ*) malloc (sizeof(SEQ));
+			container[container_counter-1] = tmp;
+			container[container_counter-1] -> header = tmp_line;
+			container[container_counter-1] -> type = mol;
+			container[container_counter-1] -> sequence = "";
+			container[container_counter-1] -> seq_len = 0;
 		}
 		else {
 			printf("Here is a sequence!\n");
-			tmp -> sequence = tmp_line;
+			container[container_counter-1] -> sequence = char_cat(container[container_counter-1] -> sequence, tmp_line);
 		}
 		i++;
 
 	}
-	
-	return head;
+	i = 0;
+	container = realloc(container, sizeof(SEQ*) * (container_counter+1));
+	container[container_counter] = NULL;
+	while (container[i] != NULL) {
+
+		container[i] -> seq_len = len_str(container[i] -> sequence);
+		i++;
+
+	}
+	return container;
 
 }
 
 
+/*###### Deployed subseq ######*/
 
 char* subseq(char* array, int start, int end) {
 	
@@ -216,5 +222,37 @@ char* subseq(char* array, int start, int end) {
 
 	return result;
 
+}
+
+/*###### Deployed char_cat ######*/
+
+char* char_cat(char* s1, char* s2) {
+
+	int ls1; // Length of s1.
+	int ls2; // Length of s2.
+	char* join; // Stores the whole string.
+	int i; // For loop iterator #1.
+	int j; // Indexer for join.
+
+	j = 0;
+	ls1 = len_str(s1);
+	ls2 = len_str(s2);
+	join = (char*) malloc (sizeof(char) * (ls1 + ls2));
+	
+	for (i = 0; i < ls1; i++) {
+
+		join[j] = s1[i];
+		j++;
+
+	}
+
+	for (i = 0; i < ls2; i++) {
+
+		join[j] = s2[i];
+		j++;
+
+	}
+	join[j] = '\0';
+	return join;
 }
 

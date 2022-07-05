@@ -37,14 +37,34 @@ int main(int argc, char* argv[]) {
 
 	printf("------------------- Testing load_seqs -------------------\n");
 
-	SEQ* seq = load_seqs(data, "DNA", '\n');
+	SEQ** seqs = load_seqs(data, "DNA", '\n');
+	
+	i = 0;
+	while (seqs[i] != NULL) {
 
+		printf("%s|%s\n%s - len: %d\n",\
+				seqs[i] -> header,\
+				seqs[i] -> type,\
+				seqs[i] -> sequence,\
+				seqs[i] -> seq_len);
+		i++;
+
+	}
+	
+	printf("------------------- Testing char_cat --------------------\n");
+
+	char* string;
+	char* s1 = "Hello ";
+	char* s2 = "world!";
+	string = char_cat(s1, s2);
+	printf("Concatenate %s and %s, resulted in: %s\n", s1, s2, string);
 	free(idxs);
 	free(data);
 	free(sub);
 	//To free results.
 	//I hope it works.
 	results = NULL;
+	free(string);
 	/* Works pretty good
 	SEQ one_seq = {.type = "DNA",\
 			.header = "Sequence_1",\
