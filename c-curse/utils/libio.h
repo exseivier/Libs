@@ -7,6 +7,7 @@
 #define TRUE 1
 #define FALSE 0
 #define bool int
+#define RETC '\n'
 
 /* 
  * This data structure holds a sequence from fasta format.
@@ -20,6 +21,7 @@ struct sequence {
 	char* header;
 	char* sequence;
 	int seq_len;
+	bool hide;
 };
 typedef struct sequence SEQ;
 
@@ -30,6 +32,40 @@ typedef struct sequence SEQ;
  * molecule, it could be DNA, RNA or AA.
  */
 SEQ** load_seqs(char* data, char* mol, char delimiter);
+
+/* split_genome function.
+ * Split sequence of a genome in fragments
+ * in a defined size and at defined steps.
+ * Requires SEQ** container, int size and int step.
+ * Returns SEQ** container with the split sequences.
+ */
+SEQ** split_geome(SEQ** container, int size, int step);
+
+/* hide_matched_seqs function.
+ * Set FALSE hide slot in SEQ structure if the header
+ * matches an element of headers array.
+ * Requires a SEQ** container, and an array of headers.
+ * Returns a SEQ** container with the hide slot modified.
+ */
+SEQ** hide_matched_seqs(SEQ** container, char** headers);
+
+/* print_seqs function.
+ * Prints SEQ** containers of sequences.
+ * Requires a SEQ** container.
+ * It does not return anything.
+ */
+void print_seqs(SEQ** container);
+
+/* write_seqs function.
+ * Writes non hidden sequences from SEQ** container
+ * to a file.
+ * Requires a SEQ** container and the file name
+ * outFilename.
+ * Returns a bool value. It is TRUE for success and FALSE
+ * for failure.
+ */
+bool write_seqs(SEQ** container, char* outFilename);
+
 
 /* load_file function
  * This function reads the file line by

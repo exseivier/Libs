@@ -176,6 +176,7 @@ SEQ** load_seqs(char* data, char* mol, char delimiter) {
 			container[container_counter-1] -> type = mol;
 			container[container_counter-1] -> sequence = "";
 			container[container_counter-1] -> seq_len = 0;
+			container[container_counter-1] -> hide = FALSE;
 		}
 		else {
 			printf("Here is a sequence!\n");
@@ -197,6 +198,65 @@ SEQ** load_seqs(char* data, char* mol, char delimiter) {
 	}
 	return container;
 
+}
+
+/*###### Deploying split_genome ######*/
+
+SEQ** split_genome(SEQ** container, int size, int step) {
+
+	// Coding...
+
+}
+
+
+/*###### Deployed print_seqs ######*/
+
+void print_seqs(SEQ** container) {
+	
+	int i; // Iterator.
+
+	i = 0;
+
+	while (container[i] != NULL) {
+		printf("%s\n%s - %d\n", container[i] -> header, \
+					container[i] -> sequence, \
+					container[i] -> hide);
+		i++;
+	}
+
+}
+
+/*###### Deploying write_seqs ######*/
+
+
+	// HERE!
+
+
+/*###### Deployed update_seqs ######*/
+
+SEQ** hide_matched_seqs(SEQ** container, char** headers) {
+
+	int i; // SEQ container counter.
+	int j; // headers counter.
+	
+	i = 0;
+	while (container[i] != NULL) {
+		j = 0;
+		while (headers[j] != NULL ) {
+
+			if (cmp_str(headers[j], container[i] -> header)) {
+
+				container[i] -> hide = TRUE;
+				break;
+
+			}
+			j++;
+
+		}
+		i++;
+
+	}
+	return container;
 }
 
 
