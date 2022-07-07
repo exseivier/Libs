@@ -39,6 +39,17 @@ char* load_file(char* const filename) {
 		}
 	}
 	data[idx] = END_OF_CHR_ARRAY;
+	//free(FHIN);
+	// When I use fclose, in char_cat function at
+	// malloc assignment occurs a rare behavior.
+	// Error.  malloc(): invalid nex size (unsorted).
+	// I think fclose function remains some available data
+	// around the heap, so trying to acces to those addresses
+	// is prohibited and produces this error ("I think").
+	// Quite opposite, when I use free, this error does
+	// not occur but the program never ends.
+	// "WHY IS IT SO COMPLEX!"
+	//fclose(FHIN);
 	return data;
 }
 
@@ -167,7 +178,7 @@ SEQ** load_seqs(char* data, char* mol, char delimiter) {
 
 		tmp_line = lines[i];
 		if (tmp_line[0] == '>') {
-			printf("Here is a sequence header!\n");
+			//printf("Here is a sequence header!\n");
 			container_counter++;
 			container = realloc(container, sizeof(SEQ*) * container_counter);
 			tmp = (SEQ*) malloc (sizeof(SEQ));
@@ -179,7 +190,7 @@ SEQ** load_seqs(char* data, char* mol, char delimiter) {
 			container[container_counter-1] -> hide = FALSE;
 		}
 		else {
-			printf("Here is a sequence!\n");
+			//printf("Here is a sequence!\n");
 			container[container_counter-1] -> sequence = \
 				char_cat(container[container_counter-1] -> sequence, \
 				tmp_line);
@@ -196,6 +207,11 @@ SEQ** load_seqs(char* data, char* mol, char delimiter) {
 		i++;
 
 	}
+	free(lines);
+	//free(tmp);
+	// If you free tmp free also container header
+	// because both tmp and container are pointing
+	// to the same memory address.
 	return container;
 
 }
@@ -229,7 +245,27 @@ void print_seqs(SEQ** container) {
 /*###### Deploying write_seqs ######*/
 
 
-	// HERE!
+bool write_seqs(SEQ** container, char* outFilename) {
+
+	FILE* OUTF;
+	int i; // Counter for while loop.
+
+	OUTF = fopen(outFilename, "w+");
+	i = 0;
+	while (container[i] != NULL) {
+
+		if (container[i] -> hide == FALSE) {
+
+			fprintf(OUTF, "%s\n%s\n", container[i] -> header, \
+						container[i] -> sequence);
+
+		}
+		i++;
+	}
+	fclose(OUTF);
+	return TRUE;
+	
+}
 
 
 /*###### Deployed update_seqs ######*/
@@ -282,7 +318,9 @@ char* subseq(char* array, int start, int end) {
 		}
 
 	}
-
+	if (result[result_idx] != END_OF_CHR_ARRAY) {
+		result[result_idx] = END_OF_CHR_ARRAY;
+	}
 	return result;
 
 }
