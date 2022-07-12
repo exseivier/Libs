@@ -167,8 +167,10 @@ SEQ** load_seqs(char* data, char* mol, char delimiter) {
 	char* tmp_line; // temporary storage for each line in lines.
 	int i; // To iterate along lines.
 	int container_counter; // Counts the elements in container.
+	int buf_inc; // BUFFER increments.
 	
-	container = (SEQ**) malloc (sizeof(SEQ*));
+	buf_inc = BUFFER;
+	container = (SEQ**) malloc (sizeof(SEQ*) * buf_inc);
 	container_counter = 0;
 	tmp_line = NULL;
 	lines = strsplit(data, delimiter);
@@ -180,7 +182,10 @@ SEQ** load_seqs(char* data, char* mol, char delimiter) {
 		if (tmp_line[0] == '>') {
 			//printf("Here is a sequence header!\n");
 			container_counter++;
-			container = realloc(container, sizeof(SEQ*) * container_counter);
+			if (container_counter == buf_inc) {
+				buf_inc = buf_inc * 2;
+				container = realloc(container, sizeof(SEQ*) * buf_inc);
+			}
 			tmp = (SEQ*) malloc (sizeof(SEQ));
 			container[container_counter-1] = tmp;
 			container[container_counter-1] -> header = tmp_line;
@@ -219,8 +224,71 @@ SEQ** load_seqs(char* data, char* mol, char delimiter) {
 /*###### Deploying split_genome ######*/
 
 SEQ** split_genome(SEQ** container, int size, int step) {
+	
+	// Declaration
+	SEQ** split_seqs; // Container for spit sequences.
+	int cont_i; // Input sequences container counter.
+	int spli_i; // Split sequences container counter.
+	int buf_inc; // BUFFER increments.
+	char** tmp_seqs; // Holds sequences.
+	int tseq_i; // Counter for tmp_seqs.
+	int num_of_frags; // Number of expected fragments after split_by_window.
 
-	// Coding...
+	// Assignment.
+	cont_i = 0;
+	spli_i = 0;
+	buf_inc = BUFFER;
+	split_seqs = (SEQ**) malloc (sizeof(SEQ*) * buf_inc);
+	
+	// Iterates over input sequences container.
+	while (container[cont_i] != NULL) {
+		
+		// Calculates the number of expected fragments by
+		// dividing the sequence length between step number.
+		num_of_frags = container[cont_i] -> seq_len / step;
+
+		tmp_seqs = (char**) malloc (sizeof(char*) * num_of_frags);
+
+		// Returns the split sequences of size "size" at each "step" step.
+		tmp_seqs = split_by_window(container[cont_i] -> sequence, size, step);
+		
+		// Checks if more space is needed in the heap;
+		if (spli_i == buf_inc) {
+
+			buf_inc = buf_inc * 2;
+			split_seqs = realloc(split_seqs, sizeof(SEQ*) * buf_inc);
+
+		}
+		
+		// For each tmp seq fill the slots of a SEQ structure.
+		for (tseq_i = 0; tseq_i < num_of_frags; tseq_i++) {
+
+			split_seqs[spli_i] -> type = "DNA";
+			snprintf(split_seqs[spli_i] -> header, \
+					sizeof(container[cont_i] -> header) + sizeof(spli_i), \
+					"%s_%d", \
+					container[cont_i] -> header, \
+					spli_i);
+
+			split_seqs[spli_i] -> sequence = tmp_seqs[tseq_i];
+			split_seqs[spli_i] -> seq_len = len_str(tmp_seqs[tseq_i]);
+			split_seqs[spli_i] -> hide = FALSE;
+			spli_i++;
+
+		}
+
+		cont_i++;
+	}
+
+}
+
+
+/*###### Deploying split_by_window ######*/
+
+
+char** split_by_window(char* sequence, int size, int step) {
+
+	## Coding...
 
 }
 
