@@ -59,6 +59,60 @@ int main (int argc, char* argv[]) {
 			printf("Sequences stored in file %s...\n", outFilename);
 
 		}
+		else {
+
+			printf("Something went wrong. Fixit with gdb...");
+
+		}
+	}
+	else if (cmp_str(intprocID, "split_genome")) {
+
+		/* Arguments order
+		 * 1. InterProcID (*).
+		 * 2. Sequences file name.
+		 * 3. Fragment size.
+		 * 4. Step size.
+		 * 5. Out file name.
+		 */
+
+		if (argc != 6) {
+
+			printf("Error in arguments!");
+			exit(1);
+
+		}
+		else {
+
+			char* seqsFilename = argv[2];
+			char* a = argv[3];
+			int frag_size = atoi(a);
+			
+			char* b = argv[4];
+			int step = atoi(b);
+			
+			char* outFilename = argv[5];
+			
+			printf("Open %s file...\n", seqsFilename);
+			char* seqs_data = load_file(seqsFilename);
+			
+			printf("Loading sequences...\n");
+			SEQ** sequences = load_seqs(seqs_data, "DNA", RETC);
+			
+			printf("Split genome...\n");
+			sequences = split_genome(sequences, frag_size, step);
+			
+			if (write_seqs(sequences, outFilename)) {
+
+				printf("Split seqs were stored in %s...\n", outFilename);
+
+			}
+			else {
+
+				printf("Something went wrong at storing seqs in file...\n");
+
+			}
+
+		}
 
 	}
 	else {

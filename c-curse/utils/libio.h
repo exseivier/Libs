@@ -39,14 +39,14 @@ SEQ** load_seqs(char* data, char* mol, char delimiter);
  * Requires SEQ** container, int size and int step.
  * Returns SEQ** container with the split sequences.
  */
-SEQ** split_geome(SEQ** container, int size, int step);
+SEQ** split_genome(SEQ** container, int size, int step);
 
 /* split_by_window function.
  * Returns a char** with the sequences of the fragments
  * of the split chromosome or whole genome.
  * Requires a char* sequence, an int size and an int step.
  */
-char** split_by_window(char* sequence, int size, int step);
+char** split_by_window(char* sequence, int num_of_frags, int seq_len, int size, int step);
 
 /* hide_matched_seqs function.
  * Set FALSE hide slot in SEQ structure if the header

@@ -233,6 +233,8 @@ SEQ** split_genome(SEQ** container, int size, int step) {
 	char** tmp_seqs; // Holds sequences.
 	int tseq_i; // Counter for tmp_seqs.
 	int num_of_frags; // Number of expected fragments after split_by_window.
+	int buffer_header_len; // Buffer header length.
+	char* buffer_header; // Buffer header.
 
 	// Assignment.
 	cont_i = 0;
@@ -250,7 +252,12 @@ SEQ** split_genome(SEQ** container, int size, int step) {
 		tmp_seqs = (char**) malloc (sizeof(char*) * num_of_frags);
 
 		// Returns the split sequences of size "size" at each "step" step.
-		tmp_seqs = split_by_window(container[cont_i] -> sequence, size, step);
+		tmp_seqs = split_by_window(\
+				container[cont_i] -> sequence, \
+				num_of_frags, \
+				container[cont_i] -> seq_len, \
+				size, \
+				step);
 		
 		// Checks if more space is needed in the heap;
 		if (spli_i == buf_inc) {
@@ -263,22 +270,45 @@ SEQ** split_genome(SEQ** container, int size, int step) {
 		// For each tmp seq fill the slots of a SEQ structure.
 		for (tseq_i = 0; tseq_i < num_of_frags; tseq_i++) {
 
+			split_seqs[spli_i] = (SEQ*) malloc (sizeof(SEQ));
 			split_seqs[spli_i] -> type = "DNA";
-			snprintf(split_seqs[spli_i] -> header, \
-					sizeof(container[cont_i] -> header) + sizeof(spli_i), \
-					"%s_%d", \
-					container[cont_i] -> header, \
-					spli_i);
 
+			buffer_header_len = len_str(container[cont_i] -> header) \
+					    + 20 \
+					    + sizeof(char);
+
+			buffer_header = (char*) malloc (sizeof(char) * buffer_header_len);
+			
+			snprintf(\
+				buffer_header, \
+				buffer_header_len, \
+				"%s_%d%c", \
+				container[cont_i] -> header, \
+				spli_i, '\0');
+			split_seqs[spli_i] -> header = buffer_header;
 			split_seqs[spli_i] -> sequence = tmp_seqs[tseq_i];
 			split_seqs[spli_i] -> seq_len = len_str(tmp_seqs[tseq_i]);
 			split_seqs[spli_i] -> hide = FALSE;
+
+			// spli_i counter update
 			spli_i++;
 
 		}
-
+		// counter update
 		cont_i++;
 	}
+	if (spli_i >= buf_inc) {
+
+		split_seqs = realloc(split_seqs, sizeof(SEQ*) * spli_i);
+		split_seqs[spli_i] = NULL;
+
+	}
+	else {
+
+		split_seqs[spli_i] = NULL;
+
+	}
+	return split_seqs;
 
 }
 
@@ -286,10 +316,31 @@ SEQ** split_genome(SEQ** container, int size, int step) {
 /*###### Deploying split_by_window ######*/
 
 
-char** split_by_window(char* sequence, int size, int step) {
+char** split_by_window(char* sequence, int num_of_frags, int seq_len, int size, int step) {
+	
+	int start = 0;
+	int end = size;
+	int fi = 0; // fragments counter.
+	char** fragments = (char**) malloc (sizeof(char*) * num_of_frags);
 
-	## Coding...
+	while (start < seq_len) {
 
+		fragments[fi] = (char*) malloc (sizeof(char) * (size+1));
+		fragments[fi] = subseq(sequence, start, end);
+		start = start + step;
+		end = start + size;
+		fi++;
+
+	}
+
+	/*
+	result[0] = "CGGATGTATATTAGCTAGTTAGC";
+	result[1] = "CGATGCTGTCAGCGCGCTAGGCA";
+	result[2] = "CAGATGCTTATAGCGATCGTTGA";
+	result[3] = "ATGACTAGGAGAGCATGCTAGTT";
+	*/
+
+	return fragments;
 }
 
 
