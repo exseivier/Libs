@@ -116,7 +116,7 @@ int* which_idx(char* string, char delimiter) {
 		if (j == buf_inc) {
 
 			buf_inc = buf_inc + BUFFER;
-			idxs = realloc(idxs, sizeof(buf_inc));
+			idxs = realloc(idxs, sizeof(int) * buf_inc);
 
 		}
 
@@ -161,7 +161,7 @@ int len_int_str(int* string) {
 
 SEQ** load_seqs(char* data, char* mol, char delimiter) {
 	
-	SEQ* tmp; // Declaring temporary SEQ structure.
+	//SEQ* tmp; // Declaring temporary SEQ structure.
 	SEQ** container; // Declaring container double pointer SEQ.
 	char** lines; // To recieve split data.
 	char* tmp_line; // temporary storage for each line in lines.
@@ -179,26 +179,40 @@ SEQ** load_seqs(char* data, char* mol, char delimiter) {
 	while (lines[i] != NULL) {
 
 		tmp_line = lines[i];
+		//printf("Line %s - %d\n", tmp_line, i);
 		if (tmp_line[0] == '>') {
 			//printf("Here is a sequence header!\n");
+			//printf("Loading sequence %s\n", tmp_line);
 			container_counter++;
 			if (container_counter == buf_inc) {
 				buf_inc = buf_inc * 2;
 				container = realloc(container, sizeof(SEQ*) * buf_inc);
 			}
-			tmp = (SEQ*) malloc (sizeof(SEQ));
-			container[container_counter-1] = tmp;
+
+			container[container_counter-1] = (SEQ*) malloc (sizeof(SEQ));
 			container[container_counter-1] -> header = tmp_line;
 			container[container_counter-1] -> type = mol;
-			container[container_counter-1] -> sequence = "";
+			container[container_counter-1] -> sequence = NULL;
 			container[container_counter-1] -> seq_len = 0;
 			container[container_counter-1] -> hide = FALSE;
+			tmp_line = NULL;
 		}
 		else {
 			//printf("Here is a sequence!\n");
-			container[container_counter-1] -> sequence = \
-				char_cat(container[container_counter-1] -> sequence, \
-				tmp_line);
+			// Now, I going to implement the dynamic array algorithm to improve
+			// the speed of execution. ------ > HERE !!!
+			if (container[container_counter-1] -> sequence == NULL) {
+				
+				container[container_counter-1] -> sequence = tmp_line;
+				tmp_line = NULL;
+
+			}
+			else {
+				container[container_counter-1] -> sequence = \
+							char_cat(container[container_counter-1] -> sequence, \
+								tmp_line);
+				tmp_line = NULL;
+			}
 		}
 		i++;
 
@@ -212,7 +226,7 @@ SEQ** load_seqs(char* data, char* mol, char delimiter) {
 		i++;
 
 	}
-	free(lines);
+	//free(lines);
 	//free(tmp);
 	// If you free tmp free also container header
 	// because both tmp and container are pointing
@@ -259,16 +273,16 @@ SEQ** split_genome(SEQ** container, int size, int step) {
 				size, \
 				step);
 		
-		// Checks if more space is needed in the heap;
-		if (spli_i == buf_inc) {
-
-			buf_inc = buf_inc * 2;
-			split_seqs = realloc(split_seqs, sizeof(SEQ*) * buf_inc);
-
-		}
-		
 		// For each tmp seq fill the slots of a SEQ structure.
 		for (tseq_i = 0; tseq_i < num_of_frags; tseq_i++) {
+			
+			// Checks if more space is needed.
+			if (spli_i == buf_inc) {
+
+				buf_inc = buf_inc * 2;
+				split_seqs = realloc(split_seqs, sizeof(SEQ*) * buf_inc);
+
+			}
 
 			split_seqs[spli_i] = (SEQ*) malloc (sizeof(SEQ));
 			split_seqs[spli_i] -> type = "DNA";
@@ -444,22 +458,47 @@ char* subseq(char* array, int start, int end) {
 
 }
 
-/*###### Deployed char_cat ######*/
+/*############################################################################################ Deployed char_cat ######*/
 
 char* char_cat(char* s1, char* s2) {
 
 	int ls1; // Length of s1.
 	int ls2; // Length of s2.
-	char* join; // Stores the whole string.
 	int i; // For loop iterator #1.
 	int j; // Temporary index storage for join.
 
 	j = 0;
+	i = 0;
 	ls1 = len_str(s1);
 	ls2 = len_str(s2);
-	join = (char*) malloc (sizeof(char) * (ls1 + ls2));
+	//tmp_s1 = s1;
 	
-	for (i = 0; i < ls1; i++) {
+	// I going to try to reallocate memory in s1. I really do not know if this is allowed.
+	// It worked!!!!
+	s1 = (char*) realloc (s1, sizeof(char) * (ls1 + ls2));
+	
+	if (s1 == NULL) {
+
+		fprintf(stderr, "Out of memory at char_cat function\n");
+		fprintf(stderr, "Attempting to allocate memory but malloc returns NULL\n");
+		exit(1);
+
+	}
+	i = ls1;
+	while ( i < ls1 + ls2) {
+
+		s1[i] = s2[j];
+		j++;
+		i++;
+
+	}
+	s1[i] = END_OF_CHR_ARRAY;
+	return s1;
+
+// #################################################
+/* Silence to operate on the new procedure.	
+	
+   	for (i = 0; i < ls1; i++) {
 
 		join[j] = s1[i];
 		j++;
@@ -474,6 +513,9 @@ char* char_cat(char* s1, char* s2) {
 	}
 	join[j] = END_OF_CHR_ARRAY;
 	return join;
+*/
+// #################################################
+
 }
 
 
