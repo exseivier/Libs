@@ -4,19 +4,6 @@
 #include "libio.h"
 
 
-void assert_memory(bool expression) {
-
-	if (expression == FALSE) {
-
-		printf("Out of memory\n");
-		printf("Attempt to allocate dynamic memory but malloc returns NULL");
-		exit(1);
-
-	}
-
-}
-
-
 char* load_file(char* const filename) {
 	
 	printf("Opening %s...\n", filename);
@@ -174,20 +161,15 @@ int len_int_str(int* string) {
 
 SEQ** load_seqs(char* data, char* mol, char delimiter) {
 	
-	
+	//SEQ* tmp; // Declaring temporary SEQ structure.
 	SEQ** container; // Declaring container double pointer SEQ.
 	char** lines; // To recieve split data.
 	char* tmp_line; // temporary storage for each line in lines.
 	int i; // To iterate along lines.
 	int container_counter; // Counts the elements in container.
 	int buf_inc; // BUFFER increments.
-	int seq_buf_inc; // BUFFER increments to resize dynamic memory.
-	int len_seq; // Total length of both sequences s1 and s2.
-	int len_tmp_line; // Length of tmp_line.
 	
 	buf_inc = BUFFER;
-	seq_buf_inc = BUFFER;
-	len_seq = 0;
 	container = (SEQ**) malloc (sizeof(SEQ*) * buf_inc);
 	container_counter = 0;
 	tmp_line = NULL;
@@ -197,7 +179,6 @@ SEQ** load_seqs(char* data, char* mol, char delimiter) {
 	while (lines[i] != NULL) {
 
 		tmp_line = lines[i];
-		len_tmp_line = len_str(tmp_line);
 		//printf("Line %s - %d\n", tmp_line, i);
 		if (tmp_line[0] == '>') {
 			//printf("Here is a sequence header!\n");
@@ -218,39 +199,18 @@ SEQ** load_seqs(char* data, char* mol, char delimiter) {
 		}
 		else {
 			//printf("Here is a sequence!\n");
-			/*
 			// Now, I going to implement the dynamic array algorithm to improve
 			// the speed of execution. ------ > HERE !!!
-			// Dynamic array algorithm improves a lot the speed of execution.
-			*/
-
 			if (container[container_counter-1] -> sequence == NULL) {
 				
-				container[container_counter-1] -> sequence = tmp_line;			
-				container[container_counter-1] -> sequence = \
-							(char*)realloc(container[container_counter-1] -> sequence, \
-									sizeof(char) * seq_buf_inc);
-				len_seq = len_tmp_line;
+				container[container_counter-1] -> sequence = tmp_line;
 				tmp_line = NULL;
 
 			}
 			else {
-				len_seq = len_seq + len_tmp_line;
-				if (len_seq >= seq_buf_inc) {
-					while (len_seq >= seq_buf_inc) {
-
-						seq_buf_inc = seq_buf_inc * 2;
-
-					}
-					container[container_counter-1] -> sequence = \
-								(char*)realloc(container[container_counter-1] -> sequence, \
-										sizeof(char) * seq_buf_inc);
-				}
 				container[container_counter-1] -> sequence = \
-							charDyn_cat(container[container_counter-1] -> sequence, \
-								tmp_line, \
-								len_seq - len_tmp_line, \
-								len_tmp_line);
+							char_cat(container[container_counter-1] -> sequence, \
+								tmp_line);
 				tmp_line = NULL;
 			}
 		}
@@ -387,6 +347,13 @@ char** split_by_window(char* sequence, int num_of_frags, int seq_len, int size, 
 
 	}
 
+	/*
+	result[0] = "CGGATGTATATTAGCTAGTTAGC";
+	result[1] = "CGATGCTGTCAGCGCGCTAGGCA";
+	result[2] = "CAGATGCTTATAGCGATCGTTGA";
+	result[3] = "ATGACTAGGAGAGCATGCTAGTT";
+	*/
+
 	return fragments;
 }
 
@@ -469,7 +436,6 @@ char* subseq(char* array, int start, int end) {
 	// Dynamic memory allocation for result array.
 	// The length equals end - start.
 	char* result =  (char*) malloc (sizeof(char) * end-start+1);
-
 	// Index for result array. It initialises 0.
 	int result_idx = 0;
 	// for loop begins at 3 and ends at 8-1.
@@ -529,21 +495,26 @@ char* char_cat(char* s1, char* s2) {
 	s1[i] = END_OF_CHR_ARRAY;
 	return s1;
 
-}
-
-char* charDyn_cat(char* s1, char* s2, int ls1, int ls2) {
+// #################################################
+/* Silence to operate on the new procedure.	
 	
-	int i; // While loop counter.
-	i = 0;
-	while (s2[i] != END_OF_CHR_ARRAY) {
+   	for (i = 0; i < ls1; i++) {
 
-		s1[ls1] = s2[i];
-		ls1++;
-		i++;
+		join[j] = s1[i];
+		j++;
 
 	}
-	s1[ls1] = END_OF_CHR_ARRAY;
-	return s1;
+
+	for (i = 0; i < ls2; i++) {
+
+		join[j] = s2[i];
+		j++;
+
+	}
+	join[j] = END_OF_CHR_ARRAY;
+	return join;
+*/
+// #################################################
 
 }
 

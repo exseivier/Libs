@@ -25,6 +25,16 @@ struct sequence {
 };
 typedef struct sequence SEQ;
 
+
+/* assert_memory function. ############################
+ * This function evaluates a condition. If FALSE thus,
+ * shows a message regarding to the memory fail and
+ * exits with tag 1.
+ */
+void assert_memory (bool expression);
+// ####################################################
+
+
 /* load_seqs function.
  * Requires an array (data) with data to be
  * processed to a sequencae data structure.
@@ -44,17 +54,20 @@ SEQ** split_genome(SEQ** container, int size, int step);
 /* split_by_window function.
  * Returns a char** with the sequences of the fragments
  * of the split chromosome or whole genome.
- * Requires a char* sequence, an int size and an int step.
+ * Requires a char* sequence, an int size and
+ * an int step.
  */
 char** split_by_window(char* sequence, int num_of_frags, int seq_len, int size, int step);
 
-/* hide_matched_seqs function.
+/* hide_matched_seqs function. ########################
  * Set FALSE hide slot in SEQ structure if the header
  * matches an element of headers array.
  * Requires a SEQ** container, and an array of headers.
- * Returns a SEQ** container with the hide slot modified.
+ * Returns a SEQ** container with the hide slot
+ * modified.
  */
 SEQ** hide_matched_seqs(SEQ** container, char** headers);
+// #####################################################
 
 /* print_seqs function.
  * Prints SEQ** containers of sequences.
@@ -107,8 +120,8 @@ char** strsplit(char* string, char delimiter);
 /* which_idx function
  * Find the index numbers when a character match
  * is found into an array.
- * Requires a pointer to an array (string), and a character
- * used to search for it in the array (delimiter).
+ * Requires a pointer that points to an array (string), and a character
+ * used to search for it in the array (called delimiter).
  * Example.
  * 	char str[] = "hello world!";
  * 	int* idx = which_idx(str, 'o');
@@ -120,19 +133,36 @@ char** strsplit(char* string, char delimiter);
  */
 int* which_idx(char* string, char delimiter);
 
-/* len_str function
+/* len_str and len_int_str functions. ############
  * Calculates the length of a charcters string.
  * Returns an integer and requires a char pointer
  * to the array.
  */
 int len_str(char* string);
 int len_int_str(int* string);
+// ##############################################
 
-/* char_cat function
+/* char_cat function #####################
  * Concatenates two char strings.
  * Require two pointers to char arrays.
+ * This function realloc memory from old
+ * block to a new block with size of
+ * ls1 + ls2 each time this function is
+ * called. So what a mess it is.
  */
 char* char_cat(char* s1, char* s2);
+// ######################################
+
+/* charDyn_cat function #################
+ * Concatenates two char strings.
+ * I implemented the dynamic array
+ * algorithm to improve the execution
+ * speed.
+ * This function returns a char pointer
+ * and requires two char input pointers.
+ */
+char* charDyn_cat(char* s1, char* s2, int ls1, int ls2);
+// ######################################
 
 /* cmp_str function
  * Compares two character strings.
