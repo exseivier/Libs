@@ -327,8 +327,7 @@ SEQ** split_genome(SEQ** container, int size, int step) {
 			split_seqs[spli_i] = (SEQ*) malloc (sizeof(SEQ));
 			split_seqs[spli_i] -> type = "DNA";
 
-			buffer_header_len = len_str(container[cont_i] -> header) \
-					    + 20 \
+			buffer_header_len = 27 \
 					    + sizeof(char);
 
 			buffer_header = (char*) malloc (sizeof(char) * buffer_header_len);
@@ -337,7 +336,7 @@ SEQ** split_genome(SEQ** container, int size, int step) {
 				buffer_header, \
 				buffer_header_len, \
 				"%s_%d%c", \
-				container[cont_i] -> header, \
+				">frag", \
 				spli_i, '\0');
 			split_seqs[spli_i] -> header = buffer_header;
 			split_seqs[spli_i] -> sequence = tmp_seqs[tseq_i];
