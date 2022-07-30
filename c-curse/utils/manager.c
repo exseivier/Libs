@@ -48,11 +48,13 @@ int main (int argc, char* argv[]) {
 		seqs_data = load_file(seqsFilename);
 		head_data = load_file(headFilename);
 		sequences = load_seqs(seqs_data, molecule, RETC);
-		headers = strsplit(head_data, RETC);
 		free(seqs_data);
+		seqs_data = NULL;
+		headers = strsplit(head_data, RETC);
 		free(head_data);
+		head_data = NULL;
 		//print_seqs(sequences);
-		sequences = hide_matched_seqs(sequences, headers);
+		hide_matched_seqs(sequences, headers);
 		//print_seqs(sequences);
 		if (write_seqs(sequences, outFilename)) {
 		

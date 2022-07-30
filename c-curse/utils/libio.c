@@ -98,6 +98,10 @@ char** strsplit(char* string, char delimiter) {
 	i = 0;
 	j = 0;
 	
+	// Review this code below !!!!! I think somewhere
+	// inside the code below corrupts memory.
+	// I really do not know why, where and what does that.
+
 	while (i < lidxs) {
 
 		results[i] = subseq(string, j, idxs[i]);
@@ -107,6 +111,7 @@ char** strsplit(char* string, char delimiter) {
 	}
 	results[i] = subseq(string, j, lstr-1);
 	results[i+1] = NULL;
+	idxs = NULL;
 	return results;
 }
 
@@ -435,19 +440,21 @@ bool write_seqs(SEQ** container, char* outFilename) {
 
 /*###### Deployed update_seqs ######*/
 
-SEQ** hide_matched_seqs(SEQ** container, char** headers) {
+void hide_matched_seqs(SEQ** container, char** headers) {
 
-	int i; // SEQ container counter.
-	int j; // headers counter.
+	int j; // SEQ container counter.
+	int i; // headers counter.
 	
 	i = 0;
-	while (container[i] != NULL) {
-		j = 0;
-		while (headers[j] != NULL ) {
+	j = 0;
+	while (headers[i] != NULL) {
+		//j = 0;
+		while (container[j] != NULL ) {
 
-			if (cmp_str(headers[j], container[i] -> header)) {
+			if (cmp_str(headers[i], container[j] -> header)) {
 
-				container[i] -> hide = TRUE;
+				container[j] -> hide = TRUE;
+				j++;
 				break;
 
 			}
@@ -457,7 +464,7 @@ SEQ** hide_matched_seqs(SEQ** container, char** headers) {
 		i++;
 
 	}
-	return container;
+	
 }
 
 

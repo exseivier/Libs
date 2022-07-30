@@ -66,7 +66,8 @@ char** split_by_window(char* sequence, int num_of_frags, int seq_len, int size, 
  * Returns a SEQ** container with the hide slot
  * modified.
  */
-SEQ** hide_matched_seqs(SEQ** container, char** headers);
+void hide_matched_seqs(SEQ** container, char** headers);
+//SEQ** hide_matched_seqs(SEQ** container, char** headers);
 // #####################################################
 
 /* print_seqs function.

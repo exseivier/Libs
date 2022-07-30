@@ -91,8 +91,21 @@ cat $dbase | \
 
 ##		FOR EACH BLAST HITS FILE.
 ##		MANAGER :: HIDE_MATCHED_SEQS BEGINS.
-	cat blast_out/$(basename ${sequences%.*}).blast | while read -r line; do echo ">${line}" >> blast_out/tmp; done
-	mv blast_out/tmp blast_out/$(basename ${sequences%.*}).blast
+
+	cat blast_out/$(basename ${sequences%.*}).blast | while read line; do echo ">${line}" >> blast_out/tmp; done
+	uniq blast_out/tmp > blast_out/tmp2
+	rm blast_out/tmp
+
+	#### I introduced the line tagged below because the *.blast file is corrupted in somehow.
+	#### I do not know if it came from cat, from while loop or from uniq linux command.
+	#### But such corruption also corrupts the memory allocation in fopen function in
+	#### write_seqs function in libio.c.
+	#### Adding a last return character to the *.blast file reverts the corruption.
+	#### Do not ask me why, please.
+	
+	echo "" >> blast_out/tmp2 ### This is the line I introduced to the code.
+	
+	mv blast_out/tmp2 blast_out/$(basename ${sequences%.*}).blast
 	echo -e "\n[MANAGER::HIDE_MATCHED_SEQS][BEGINS]\n"
 		
 	./manager hide_matched_seqs split_out/${split_seqs_file} blast_out/$(basename ${sequences%.*}).blast DNA split_out/tmp.txt
