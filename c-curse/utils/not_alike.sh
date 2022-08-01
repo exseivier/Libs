@@ -77,11 +77,14 @@ fi
 
 #	MEGABLAST BEGINS.
 
+echo "Copy split_out/${split_seqs_file} to split_out/input_seqs.txt"
+cp split_out/${split_seqs_file} split_out/input_seqs.txt
+
 cat $dbase | \
 	while read -r line;
 	do
-	echo "BLAST split_out/${split_seqs_file} against $dbase_dirname/${line%.*}.db"
-	blastn -query split_out/${split_seqs_file} \
+	echo "BLAST split_out/input_seqs.txt against $dbase_dirname/${line%.*}.db"
+	blastn -query split_out/input_seqs.txt \
 		-db $dbase_dirname/${line%.*}.db \
 		-task megablast \
 		-out blast_out/$(basename ${sequences%.*}).blast \
@@ -108,11 +111,11 @@ cat $dbase | \
 	mv blast_out/tmp2 blast_out/$(basename ${sequences%.*}).blast
 	echo -e "\n[MANAGER::HIDE_MATCHED_SEQS][BEGINS]\n"
 		
-	./manager hide_matched_seqs split_out/${split_seqs_file} blast_out/$(basename ${sequences%.*}).blast DNA split_out/tmp.txt
+	./manager hide_matched_seqs split_out/input_seqs.txt blast_out/$(basename ${sequences%.*}).blast DNA split_out/tmp.txt
 
 	echo -e "\n[MANAGER::HIDE_MATCHED_SEQS][ENDS]\n"
 
-	mv split_out/tmp.txt split_out/${split_seqs_file}
+	mv split_out/tmp.txt split_out/input_seqs.txt
 
 	done
 
